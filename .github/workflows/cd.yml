@@ -27,7 +27,7 @@ jobs:
           tar -C ./target/release/ -czvf ./release/adb-wifi-mac.tar.gz ./adb-wifi
           
       - name: Build Release Linux
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-latest'
         run: |
           strip target/release/adb-wifi
           mkdir -p release
@@ -42,6 +42,9 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
           files: |
             ./release/*.tar.gz
             ./release/*.zip
