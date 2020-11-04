@@ -37,7 +37,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           mkdir -p release
-          tar -C ./target/release/ -czvf ./release/onefetch-win.tar.gz ./onefetch.exe
+          tar -C ./target/release/ -czvf ./release/adb-wifi-win.tar.gz ./adb-wifi.exe
       
       - name: Release
         uses: softprops/action-gh-release@v1
