@@ -1,0 +1,9 @@
+[package]
+name = "adb-wifi"
+version = "0.1.0"
+authors = ["Kaustubh Patange <developerkp16@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+regex = "1"
+wait-timeout = "0.2.0"
