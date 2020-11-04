@@ -1,0 +1,49 @@
+name: Release CI
+
+on: [push]
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+      - name: Build
+        run: cargo build --release
+      
+      - name: Build Release Mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          strip target/release/adb-wifi
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/adb-wifi-mac.tar.gz ./adb-wifi
+          
+      - name: Build Release Linux
+        if: matrix.os == 'macos-latest'
+        run: |
+          strip target/release/adb-wifi
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/adb-wifi-linux.tar.gz ./adb-wifi
+          
+      - name: Build Release Win
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/onefetch-win.tar.gz ./onefetch.exe
+      
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./release/*.tar.gz
+            ./release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
