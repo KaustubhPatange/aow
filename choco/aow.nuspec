@@ -6,6 +6,7 @@
     <title>Adb Over Wifi (aow)</title>
     <authors>Kaustubh Patange</authors>
     <projectUrl>https://github.com/KaustubhPatange/aow</projectUrl>
+    <packageSourceUrl>https://github.com/KaustubhPatange/aow</packageSourceUrl>
     <tags>adb wifi rust command-line devices adb-wifi adb-connect connect</tags>
     <summary>A command-line tool for adb to connect devices over wifi</summary>
     <description>Adb Over Wifi (aow) is a command line tool for adb to connect devices over wifi with just one command.</description>
