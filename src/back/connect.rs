@@ -1,10 +1,10 @@
 use {
     crate::back::device::{Device, Status},
-    std::process::{Command, Stdio},
     regex::Regex,
-    wait_timeout::ChildExt,
-    std::time::Duration,
     std::io::Read,
+    std::process::{Command, Stdio},
+    std::time::Duration,
+    wait_timeout::ChildExt,
 };
 
 pub fn connect_device(d: &Device) {
@@ -12,14 +12,15 @@ pub fn connect_device(d: &Device) {
         Status::ONLINE => {
             if !is_device_connected_to_wifi(d) {
                 println!("- Error: Device {} is not connected to Wifi", d.device_id);
-                return
+                return;
             }
 
             let re = Regex::new(r"inet\saddr:(192\.168\.\d\.\d{2,})").unwrap();
 
             let out = Command::new("adb")
                 .args(&["-s", &d.device_id[..], "shell", "ifconfig"])
-                .output().unwrap();
+                .output()
+                .unwrap();
 
             let ip = String::from_utf8_lossy(&out.stdout);
             let ip = &re.captures(&ip).unwrap()[1];
@@ -27,7 +28,9 @@ pub fn connect_device(d: &Device) {
             println!("- address: {}", ip);
             println!("Making a connection...");
 
-            let mut child = Command::new("adb").arg("connect").arg(format!("{}:5555", ip))
+            let mut child = Command::new("adb")
+                .arg("connect")
+                .arg(format!("{}:5555", ip))
                 .stdout(Stdio::piped())
                 .spawn()
                 .unwrap();
@@ -38,6 +41,8 @@ pub fn connect_device(d: &Device) {
                     child.stdout.unwrap().read_to_string(&mut buffer).unwrap();
 
                     println!("- {}", buffer);
+
+                    println!("Safe to remove the USB cable along with device.");
 
                     status.code()
                 }
@@ -64,6 +69,10 @@ pub fn connect_device(d: &Device) {
             println!("Hint: Accept the prompt in your device & re run the command.")
         }
     }
+}
+
+pub fn disconnect() {
+    Command::new("adb").arg("disconnect").spawn().unwrap();
 }
 
 fn is_device_connected_to_wifi(d: &Device) -> bool {

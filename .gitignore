@@ -1,3 +1,5 @@
 /target
 *.iml
 /.idea
+/choco/tools/*.exe
+*.nupkg

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+	<id>aow</id>
+    <version>0.1.0</version>
+    <title>Adb Over Wifi (aow)</title>
+    <authors>Kaustubh Patange</authors>
+    <projectUrl>https://github.com/KaustubhPatange/aow</projectUrl>
+    <tags>adb wifi rust command-line devices adb-wifi adb-connect connect</tags>
+    <summary>A command-line tool for adb to connect devices over wifi</summary>
+    <description>Adb Over Wifi (aow) is a command line tool for adb to connect devices over wifi with just one command.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

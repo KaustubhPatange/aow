@@ -4,10 +4,19 @@ use {
     std::process::{Command, Stdio},
     back::device::Device,
     std::io::{stdin},
-    back::connect::connect_device,
+    std::env,
+    back::{
+        connect::connect_device,
+        command::parse_command
+    },
 };
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 1 {
+        parse_command(&args);
+        return
+    }
     let result = run();
     match result {
         Ok(_) => {}
@@ -23,7 +32,7 @@ fn run() -> Result<bool, String> {
     }
     let device_list = Device::get_list_of_devices();
     if device_list.len() == 0 {
-        return Err(String::from("- Error: No device is connected\n\nHint: Check your USB cable & see if USB Debugging option is enabled."));
+        return Err(String::from("- Error: No device is connected\n\nHint: If devices are connected but not visible then check your USB cable & see if USB Debugging option is enabled."));
     }
 
     println!("Finding appropriate device...");

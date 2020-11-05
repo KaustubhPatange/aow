@@ -33,4 +33,16 @@ impl Device {
             })
             .collect::<Vec<_>>();
     }
+    pub fn get_connected_device() -> Option<Device> {
+        let re = Regex::new(r"[.]").unwrap();
+
+        let x = Device::get_list_of_devices();
+        for c in x {
+            if re.is_match(&c.device_id.to_owned()) {
+                return Some(c)
+            }
+        }
+
+        None
+    }
 }
