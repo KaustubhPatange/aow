@@ -5,7 +5,7 @@ version = "0.1.0"
 authors = ["Kaustubh Patange <developerkp16@gmail.com>"]
 edition = "2018"
 readme = "README.md"
-license = "APACHE"
+license = "Apache-2.0"
 
 [package.metadata.deb]
 extended-description = """\
