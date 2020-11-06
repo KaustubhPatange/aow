@@ -22,4 +22,4 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: "{{ EVENT_PAYLOAD.repository.full_name }} with commit ${{ steps.vars.outputs.sha_short }} had a successful build!"
+          args: "${{ github.event.repository.full_name }} with commit ${{ steps.vars.outputs.sha_short }} had a successful build!"
