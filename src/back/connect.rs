@@ -15,53 +15,65 @@ pub fn connect_device(d: &Device) {
                 return;
             }
 
-            let re = Regex::new(r"inet\saddr:(192\.168\.\d\.\d{2,})").unwrap();
+            let re = Regex::new(r"inet\s?([\d]{3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})").unwrap();
 
             let out = Command::new("adb")
-                .args(&["-s", &d.device_id[..], "shell", "ifconfig"])
+                .args(&["-s", &d.device_id[..], "shell", "ip", "addr", "show", "wlan0"])
                 .output()
                 .unwrap();
 
             let ip = String::from_utf8_lossy(&out.stdout);
-            let ip = &re.captures(&ip).unwrap()[1];
+            let captures = re.captures(&ip);
+            match captures {
+                Some(value) => {
+                    let ip = &value[1];
 
-            println!("- address: {}", ip);
-            println!("Making a connection...");
+                    println!("- address: {}", ip);
+                    println!("Making a connection...");
 
-            let mut child = Command::new("adb")
-                .arg("connect")
-                .arg(format!("{}:5555", ip))
-                .stdout(Stdio::piped())
-                .spawn()
-                .unwrap();
+                    let mut child = Command::new("adb")
+                        .arg("connect")
+                        .arg(format!("{}:5555", ip))
+                        .stdout(Stdio::piped())
+                        .spawn()
+                        .unwrap();
 
-            let _status_code = match child.wait_timeout(Duration::from_secs(5)).unwrap() {
-                Some(status) => {
-                    let mut buffer = String::new();
-                    child.stdout.unwrap().read_to_string(&mut buffer).unwrap();
+                    let _status_code = match child.wait_timeout(Duration::from_secs(5)).unwrap() {
+                        Some(status) => {
+                            let mut buffer = String::new();
+                            child.stdout.unwrap().read_to_string(&mut buffer).unwrap();
 
-                    println!("- {}", buffer);
+                            println!("- {}", buffer);
+                            if !buffer.starts_with("cannot connect") {
+                                println!("Safe to remove the USB cable along with device.");
+                            }
 
-                    println!("Safe to remove the USB cable along with device.");
+                            status.code()
+                        }
+                        None => {
+                            println!("- Error: Connection timeout!");
+                            println!();
+                            println!("Hint:\n1. {}\n2. {}",
+                                     "Disconnect & re-connect your wifi of client device.",
+                                     "Check if mobile data is ON along with Wifi (this may sometimes causes a reason for connection failure).");
 
-                    status.code()
+                            child.kill().unwrap();
+                            child.wait().unwrap().code()
+                        }
+                    };
                 }
                 None => {
-                    println!("- Error: Connection timeout!");
+                    println!("- Error: Couldn't find IP address");
                     println!();
-                    println!("Hint:\n1. {}\n2. {}",
-                             "Disconnect & re-connect your wifi of client device.",
-                             "Check if mobile data is ON along with Wifi (this may sometimes causes a reason for connection failure).");
-
-                    child.kill().unwrap();
-                    child.wait().unwrap().code()
+                    println!("Hint: If your device is connected to WIFI & still you are getting this error, contact me quickly on Github.");
+                    return;
                 }
-            };
+            }
         }
         Status::OFFLINE => {
             println!("- Error: Device {} is offline", d.device_id);
             println!();
-            println!("Hint: Try disconnecting & re-connecting device.")
+            println!("Hint: Try disconnecting & re-connecting device or use aow -d to disconnect from all devices.")
         }
         Status::UNAUTHORIZED => {
             println!("- Error: Device {} is unauthorized", d.device_id);
