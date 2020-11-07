@@ -12,6 +12,11 @@ use {
 };
 
 fn main() {
+    if !is_adb_installed() {
+        println!("ADB is not installed");
+        return
+    }
+
     let args: Vec<String> = env::args().collect();
     if args.len() > 1 {
         parse_command(&args);
@@ -27,9 +32,6 @@ fn main() {
 }
 
 fn run() -> Result<bool, String> {
-    if !is_adb_installed() {
-        return Err(String::from("ADB is not installed"))
-    }
     let device_list = Device::get_list_of_devices();
     if device_list.len() == 0 {
         return Err(String::from("- Error: No device is connected\n\nHint: If devices are connected but not visible then check your USB cable & see if USB Debugging option is enabled."));

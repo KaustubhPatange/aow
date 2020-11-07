@@ -23,7 +23,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-        args: "${{ github.event.repository.full_name }} with commit ${{ steps.vars.outputs.sha_short }} had a successful build!"
+          args: "${{ github.event.repository.full_name }} with commit ${{ steps.vars.outputs.sha_short }} had a successful build!"
       - name: Sending complete PR notifications
         if: (!startsWith(github.event.pull_request, ''))
         env:

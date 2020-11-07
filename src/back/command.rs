@@ -11,18 +11,19 @@ pub fn parse_command(c: &Vec<String>) {
         match result {
             Ok(_) => {
                 disconnect();
-                println!("Disconnected everything");
             }
             Err(_) => {}
         }
     }
 }
 
-fn show_connected_device() -> Result<Device, bool> {
-    let d = Device::get_connected_device();
+fn show_connected_device() -> Result<Vec<Device>, bool> {
+    let d = Device::get_list_of_connected_device();
     match d {
         Some(value) => {
-            println!("- Found {} as connected device", value.device_id);
+            for v in value.iter() {
+                println!("- Found {} as connected device", v.device_id);
+            }
             Ok(value)
         }
         None => {
