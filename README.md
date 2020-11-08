@@ -23,6 +23,11 @@ The program is available for all major platforms _**Mac, Linux & Windows**_ howe
 - [Linux](https://github.com/KaustubhPatange/aow/wiki/Installation/#linux)
 - [Mac](https://github.com/KaustubhPatange/aow/wiki/Installation/#mac)
 
+Some information you might be interested in reading,
+
+- [How it works?](https://github.com/KaustubhPatange/aow/wiki/FAQs#how-it-works)
+- [Why does this tool exists?](https://github.com/KaustubhPatange/aow/wiki/FAQs#why-it-exists)
+
 ## Contribute
 
 Contributions are very welcome! See [CONTRIBUTING](CONTRIBUTING.md) for more info.

@@ -1,6 +1,8 @@
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
 
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 pub fn parse_command(c: &Vec<String>) {
     if c.contains(&"-h".to_owned()) || c.contains(&"--help".to_owned()) {
         print_all_commands()
@@ -34,7 +36,7 @@ fn show_connected_device() -> Result<Vec<Device>, bool> {
 }
 
 fn print_all_commands() {
-    println!("ADB Over Wifi (aow) v0.1.0 - A command line tool to connect devices over wifi (requires ADB).");
+    println!("ADB Over Wifi (aow) v{} - A command line tool to connect devices over wifi (requires ADB).", VERSION);
     println!("Copyright 2020 Kaustubh Patange - https://github.com/KaustubhPatange/aow");
     println!();
     println!("Usage: aow [options]");

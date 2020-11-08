@@ -32,7 +32,7 @@ jobs:
           $version = ((Get-Content -Path .\cargo.toml)[3] -split '=')[1].trim().replace('"',"") 
           $nuspec = (Get-Content -Path choco\aow.nuspec)
           $nuspec[4] = "<version>${version}</version>"
-          Set-Content -Path aow.nuspec -Value $nuspec
+          Set-Content -Path choco\aow.nuspec -Value $nuspec
 
           # Optionally display the outputs
 
