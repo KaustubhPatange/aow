@@ -48,8 +48,8 @@ pub fn connect_device(d: &Device) {
                                 println!("Safe to remove the USB cable along with device.");
                             }else {
                                 println!("Applying fix: killing server");
-                                Command::new("adb").arg("kill-server").spawn().unwrap().wait();
-                                Command::new("adb").arg("tcpip 5555").spawn().unwrap().wait();
+                                Command::new("adb").arg("kill-server").spawn().unwrap().wait().ok();
+                                Command::new("adb").arg("tcpip 5555").spawn().unwrap().wait().ok();
                                 println!();
                                 println!("Hint: Try running the command 'aow' again to see if error is fixed.")
                             }
@@ -90,7 +90,7 @@ pub fn connect_device(d: &Device) {
 }
 
 pub fn disconnect() {
-    Command::new("adb").arg("disconnect").spawn().unwrap().wait();
+    Command::new("adb").arg("disconnect").spawn().unwrap().wait().ok();
 }
 
 fn is_device_connected_to_wifi(d: &Device) -> bool {

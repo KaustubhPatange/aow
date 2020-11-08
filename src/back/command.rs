@@ -41,7 +41,7 @@ fn print_all_commands() {
     println!();
     println!("Options:");
     println!("      [null]              Connects a device over wifi (see demo on Github)");
-    println!("      -s, --show          Shows the connected device over wifi (if any).");
+    println!("      -s, --show          Shows the list of connected device over wifi (if any).");
     println!("      -d, --disconnect    Disconnect the connected device (if any).");
     println!("      -h, --help          Prints this help message.");
     println!();
