@@ -1,13 +1,15 @@
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
 
-const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 pub fn parse_command(c: &Vec<String>) {
     if c.contains(&"-h".to_owned()) || c.contains(&"--help".to_owned()) {
         print_all_commands()
     } else if c[1].eq("-s") || c[1].eq("--show") {
         let _ = show_connected_device();
+    } else if c[1].eq("-v") || c[1].eq("--version") {
+        println!("{}", VERSION)
     } else if c[1].eq("-d") || c[1].eq("--disconnect") {
         let result = show_connected_device();
         match result {
@@ -45,6 +47,7 @@ fn print_all_commands() {
     println!("      [null]              Connects a device over wifi (see demo on Github)");
     println!("      -s, --show          Shows the list of connected device over wifi (if any).");
     println!("      -d, --disconnect    Disconnect the connected device (if any).");
+    println!("      -v, --version       Prints the current version of tool");
     println!("      -h, --help          Prints this help message.");
     println!();
     println!("Examples:");

@@ -49,9 +49,9 @@ pub fn connect_device(d: &Device) {
                             }else {
                                 println!("Applying fix: killing server");
                                 Command::new("adb").arg("kill-server").spawn().unwrap().wait().ok();
-                                Command::new("adb").arg("tcpip 5555").spawn().unwrap().wait().ok();
+                                Command::new("adb").arg("tcpip").arg("5555").spawn().unwrap().wait().ok();
                                 println!();
-                                println!("Hint: Try running the command 'aow' again to see if error is fixed.")
+                                println!("Hint: Try running the command 'aow' again to see if error is fixed.");
                             }
 
                             status.code()

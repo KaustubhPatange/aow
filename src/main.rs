@@ -7,11 +7,13 @@ use {
     std::env,
     back::{
         connect::connect_device,
-        command::parse_command
+        command::parse_command,
+        update::fetch_new_version,
     },
 };
 
-fn main() {
+#[tokio::main]
+async fn main() {
     if !is_adb_installed() {
         println!("ADB is not installed");
         return
@@ -29,6 +31,8 @@ fn main() {
             println!("{}", value)
         }
     }
+
+    fetch_new_version().await;
 }
 
 fn run() -> Result<bool, String> {
