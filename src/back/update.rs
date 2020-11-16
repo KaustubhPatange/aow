@@ -1,8 +1,7 @@
 use {
     serde_json::{Value},
-    crate::back::command::VERSION,
     regex::Regex,
-    crate::back::config::Config,
+    back::{command::VERSION, config::Config},
 };
 
 /**
@@ -10,7 +9,7 @@ use {
 */
 pub async fn fetch_new_version() {
     if !Config::need_to_check_update() {
-       return;
+        return;
     }
 
     let client = reqwest::Client::new();
@@ -29,7 +28,7 @@ pub async fn fetch_new_version() {
             let old: i8 = re.replace_all(VERSION, "").parse::<i8>().unwrap();
 
             if new > old {
-            println!("Hint: New version {} is available to download from GitHub repository.", version);
+                println!("Hint: New version {} is available to download from GitHub repository.", version);
             }
         }
         Err(_) => {}
