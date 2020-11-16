@@ -47,9 +47,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event.tag_name }}
-          release_name: Release ${{ github.event.tag_name }}
-          draft: true
+          tag_name: ${{ github.event.release.tag_name }}
+          name: ${{ github.event..release.tag_name }}
           files: |
             ./release/*.tar.gz
             ./release/*.zip
