@@ -5,11 +5,13 @@
 <a href="https://crates.io/crates/aow"><img src="https://img.shields.io/crates/v/aow.svg" alt="cargo"></a>
 ![CI](https://github.com/KaustubhPatange/aow/workflows/CI/badge.svg)
 
-A command line tool written in `Rust` for adb to connect device over wifi.
+A command line tool written in `Rust` for adb to connect device to your machine over wifi.
 
 I generally made this to satisfy my purpose _"to not use a cable when debugging app in Android studio"_. The tool is still in it's early stage & will be actively developed as this is my to-go program to quickly connect a device over wifi.
 
-The program also verifies whether your device is connected over wifi or some similar checks with _Hints_ on how to fix them.
+The program also verifies whether your device is not connected over wifi or some similar checks with _Hints_ on how to fix them. It can smartly notify you about the new version available.
+
+If it detects more than one device then the menu will change to "choose a device" mode.
 
 The usage of the program (after [installation](#Installation)) is pretty simple. Just connect a device > open a terminal & type `aow`. For more options read [here](https://github.com/KaustubhPatange/aow/wiki/Command-line-options).
 
@@ -19,6 +21,7 @@ The usage of the program (after [installation](#Installation)) is pretty simple.
 
 The program is available for all major platforms _**Mac, Linux & Windows**_ however the installation procedure might differ.
 
+- [Universal](https://github.com/KaustubhPatange/aow/wiki/Installation#universal)
 - [Windows](https://github.com/KaustubhPatange/aow/wiki/Installation/#os)
 - [Linux](https://github.com/KaustubhPatange/aow/wiki/Installation/#linux)
 - [Mac](https://github.com/KaustubhPatange/aow/wiki/Installation/#mac)

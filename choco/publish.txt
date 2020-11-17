@@ -1,5 +1,7 @@
 - Update aow.nuspec with proper version number
 - Put exe into tools
 - Update VERIFICATION.txt
-- run "cpack"
-- run "choco push package-name.nupkg --source https://push.chocolatey.org/"
+- run |
+	cpack
+	mv *.nupkg aow.nupkg
+	choco push aow.nupkg --source https://push.chocolatey.org/
