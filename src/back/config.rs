@@ -16,6 +16,8 @@ const DATE_NO_DASH_FORMAT: &str = "%Y%m%d";
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub last_checked: String,
+    pub new_version: String,
+    pub update_needed: bool,
 }
 
 impl Config {
@@ -38,7 +40,29 @@ impl Config {
 
         Config::write(&config);
 
-        return true
+        return true;
+    }
+
+    pub fn set_update_needed(value: bool) {
+        let mut config = Config::read();
+        config.update_needed = value;
+
+        Config::write(&config);
+    }
+
+    pub fn is_update_needed() -> bool {
+        return Config::read().update_needed;
+    }
+
+    pub fn set_new_version(value: String) {
+        let mut config = Config::read();
+        config.new_version = value;
+
+        Config::write(&config);
+    }
+
+    pub fn get_new_version() -> String {
+        return Config::read().new_version;
     }
 
     fn exist() -> bool {
@@ -47,17 +71,23 @@ impl Config {
 
     fn read() -> Config {
         if !Config::exist() {
-            let d = Config::get_default();
-            Config::write(&d);
-            return d;
+            Config::write_default();
+            return Config::get_default();
         }
         let mut file = File::open(Config::get_path()).unwrap();
         let mut buffer = String::new();
         file.read_to_string(&mut buffer).ok();
 
-        let config: Config = serde_json::from_str(buffer.as_str()).unwrap();
-
-        return config;
+        let config = serde_json::from_str(buffer.as_str());
+        return match config {
+            Ok(value) => {
+                value
+            }
+            Err(_) => {
+                Config::write_default();
+                Config::get_default()
+            }
+        }
     }
 
     fn write(c: &Config) {
@@ -70,9 +100,16 @@ impl Config {
         return temp_dir().join(".aow");
     }
 
+    fn write_default() {
+        let d = Config::get_default();
+        Config::write(&d);
+    }
+
     fn get_default() -> Config {
         return Config {
-            last_checked: String::from("")
-        }
+            last_checked: String::from(""),
+            new_version: String::from(""),
+            update_needed: false,
+        };
     }
 }

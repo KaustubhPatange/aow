@@ -1,7 +1,7 @@
 [package]
 name = "aow"
 description = "A command line tool for adb to connect devices over wifi"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Kaustubh Patange <developerkp16@gmail.com>"]
 edition = "2018"
 readme = "README.md"
