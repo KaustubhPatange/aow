@@ -11,6 +11,7 @@ use {
         update::fetch_new_version,
     },
 };
+use std::process::exit;
 
 #[tokio::main]
 async fn main() {
@@ -59,8 +60,15 @@ fn choose_a_device(v: &Vec<Device>) -> Option<&Device> {
     println!("Choose a device: ");
     let mut buffer = String::new();
     stdin().read_line(&mut buffer).expect("Failed to read input.");
-    let input: usize = buffer.trim().parse().expect("Enter a number not a string.");
-    return Some(&v[input-1]);
+    let input: usize = match buffer.trim().parse() {
+        Ok(v) => { v }
+        Err(_) => { 0 }
+    };
+    if input == 0 {
+        println!("Error: Index cannot be 0 or unknown!");
+        exit(1)
+    }
+    return Some(&v[input-1])
 }
 
 fn is_adb_installed() -> bool {
