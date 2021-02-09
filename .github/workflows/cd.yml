@@ -1,14 +1,28 @@
-name: Release CI
+name: CI
 
 on: [push]
 
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove Old Release Drafts
+        if: matrix.os == 'ubuntu-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases \
+            | tr '\r\n' ' ' \
+            | jq '.[] | select(.draft == true) | .id' \
+            | xargs -I '{}' \
+          curl -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/releases/{}
+
   deploy:
+    needs: [release]
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    if: "contains(github.event.head_commit.message, '[Released]')"
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
@@ -58,11 +72,10 @@ jobs:
   notification:
     needs: [deploy]
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[Released]')"
     steps:
       - name: Sending complete notifications
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}
         uses: Ilshidur/action-discord@master
         with:
-          args: "{{ EVENT_PAYLOAD.repository.full_name }} - A new release is created."
+          args: "${{ github.event.repository.full_name }} with commit [${{ steps.vars.outputs.sha_short }}](${{github.event.repository.html_url}}/commit/${{ github.sha }}) had a successful build!"

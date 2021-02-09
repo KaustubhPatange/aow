@@ -1,7 +1,10 @@
+# Only change version when you are about to release because the next CI
+# build will automatically create a draft release & publish to chocolatey.
+
 [package]
 name = "aow"
 description = "A command line tool for adb to connect devices over wifi"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Kaustubh Patange <developerkp16@gmail.com>"]
 edition = "2018"
 readme = "README.md"
