@@ -10,14 +10,13 @@ pub enum Status {
     UNAUTHORIZED,
 }
 
+#[derive(Clone)]
 pub struct Device {
     pub device_id: String,
     pub status: Status,
 }
 
 impl Device {
-
-    const DEVICE_NOT_CONNECTED: &'static str = "- Error: No device is connected\n\nHint: If devices are connected but not visible then check your USB cable & see if USB Debugging option is enabled.";
 
     pub fn get_list_of_devices() -> Vec<Device> {
         let output = Command::new("adb").arg("devices").output().expect("");
@@ -73,13 +72,13 @@ impl Device {
             println!("Error: Index cannot be 0 or unknown!");
             exit(1)
         }
-        return Some(&v[input-1])
+        return Some(&v[input-1]);
     }
 
     pub fn get_or_choose_connected_device() -> Option<Device> {
         let device_list = Device::get_list_of_devices();
         if device_list.len() == 0 {
-            println!("{}", Device::DEVICE_NOT_CONNECTED);
+            println!("- Error: No device is connected\n\nHint: If devices are connected but not visible then check your USB cable & see if USB Debugging option is enabled.");
             return None
         }
 
@@ -89,8 +88,31 @@ impl Device {
             device_list.first().unwrap()
         };
 
-        let n: Device = Device { device_id: device.device_id.to_owned(), status: device.status.to_owned() };
+        // This guarantees that device with "Online" status are sent back.
+        return match device.status {
+            Status::ONLINE => {
+                Some(device.clone())
+            }
+            Status::OFFLINE => {
+                Device::print_device_offline(device.device_id.as_str());
+                None
+            }
+            Status::UNAUTHORIZED => {
+                Device::print_device_unauthorized(device.device_id.as_str());
+                None
+            }
+        };
+    }
 
-        return Some(n);
+    fn print_device_unauthorized(device_id: &str) {
+        println!("- Error: Device {} is unauthorized", device_id);
+        println!();
+        println!("Hint: Accept the prompt in your device & re run the command.")
+    }
+
+    fn print_device_offline(device_id: &str) {
+        println!("- Error: Device {} is offline", device_id);
+        println!();
+        println!("Hint: Try disconnecting & re-connecting device or use aow -d to disconnect from all devices.")
     }
 }
