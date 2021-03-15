@@ -14,11 +14,17 @@ pub fn parse_command(c: &Vec<String>) {
         let _ = show_connected_device();
     } else if c[1].eq("-v") || c[1].eq("--version") {
         println!("{}", VERSION)
-    } else if c[1].eq("snap") {
+    } else if c[1].eq("snap") { // snap
         if c.len() == 3 {
             take_snap(c[2].as_str());
         } else {
             take_snap("");
+        }
+    } else if c[1].eq("dlk") || c[1].eq("deeplink") { // deeplink
+        if c.len() == 3 {
+            deeplink(c[2].as_str())
+        } else {
+            println!("- Error: No url attached to the command")
         }
     } else if c[1].eq("-d") || c[1].eq("--disconnect") {
         let result = show_connected_device();
@@ -91,6 +97,16 @@ fn take_snap(file_path: &str) {
     }
 }
 
+fn deeplink(link: &str) {
+    match Device::get_or_choose_connected_device() {
+        None => {}
+        Some(device) => {
+            println!("Launching => {}", link);
+            Command::new("adb").args(&["-s", device.device_id.as_str(), "shell", "am", "start", "-d", link]).spawn().unwrap().wait().ok();
+        }
+    }
+}
+
 fn print_all_commands() {
     println!("ADB Over Wifi (aow) v{} - A command line tool to connect devices over wifi (requires ADB).", VERSION);
     println!("Copyright 2020 Kaustubh Patange - https://github.com/KaustubhPatange/aow");
@@ -98,12 +114,14 @@ fn print_all_commands() {
     println!("Usage: aow [options]");
     println!();
     println!("Options:");
-    println!("      [null]              Connects a device over wifi (see demo on Github)");
-    println!("      -s, --show          Shows the list of connected device over wifi (if any).");
-    println!("      -d, --disconnect    Disconnect the connected device (if any).");
-    println!("      -v, --version       Prints the current version of tool");
-    println!("      -h, --help          Prints this help message.");
-    println!("      snap [file-path]    Take a screenshot. Optionally, you can specify a path to save it.");
+    println!("      [null]               Connects a device over wifi (see demo on Github)");
+    println!("      -s, --show           Shows the list of connected device over wifi (if any).");
+    println!("      -d, --disconnect     Disconnect the connected device (if any).");
+    println!("      -v, --version        Prints the current version of tool");
+    println!("      -h, --help           Prints this help message.");
+    println!("      snap [file-path]     Take a screenshot. Optionally, you can specify a path to save it otherwise");
+    println!("                           the program will open native save dialog to save the file.");
+    println!("      dlk, deeplink [url]  Fires a deeplink with the \"url\".");
     println!();
     println!("Examples:");
     println!("      aow");

@@ -69,7 +69,7 @@ impl Device {
             Err(_) => { 0 }
         };
         if input == 0 {
-            println!("Error: Index cannot be 0 or unknown!");
+            println!("- Error: Index cannot be 0 or unknown!");
             exit(1)
         }
         return Some(&v[input-1]);
