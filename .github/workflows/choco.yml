@@ -47,7 +47,7 @@ jobs:
           # Create the nupkg
 
           cd choco
-          cpack
+          cpack aow.nuspec
           move *.nupkg aow.nupkg
           dir
           choco push aow.nupkg --source https://push.chocolatey.org/
