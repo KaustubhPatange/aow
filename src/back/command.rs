@@ -2,11 +2,7 @@ use crate::back::device::Device;
 use crate::back::connect::disconnect;
 use std::process::{Command, exit};
 use std::path::Path;
-
-#[cfg(target_os = "windows")]
-extern crate wfd;
-#[cfg(target_os = "windows")]
-use self::wfd::{DialogError, DialogParams};
+use crate::back::dialog::launch_windows_save_dialog;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -66,29 +62,15 @@ fn take_snap(file_path: &str) {
             } else {
                 // show save dialog for windows only
                 if cfg!(target_os="windows") {
-                    let params = DialogParams {
-                        file_name: "file.png",
-                        file_types: vec![("png", "*.png")],
-                        title: "Choose a path to save",
-                        ..Default::default()
-                    };
-                    let result = wfd::save_dialog(params);
-                    let path: String = match result {
-                        Ok(file) => {
-                            String::from(file.selected_file_path.to_str().unwrap())
+                    let file = match launch_windows_save_dialog() {
+                        Ok(file_path) => {
+                            file_path
                         }
-                        Err(e) => {
-                            match e {
-                                DialogError::HResultFailed { hresult, error_method} => {
-                                    println!("- Error: HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
-                                }
-                                DialogError::UnsupportedFilepath => { println!("- Error: Unsupported file path"); }
-                                DialogError::UserCancelled => { }
-                            }
-                            exit(1);
+                        _ => {
+                            exit(1)
                         }
                     };
-                    path
+                    file
                 } else {
                     println!("- Error: Native dialogs are not supported on {}", std::env::consts::OS);
                     exit(1);
