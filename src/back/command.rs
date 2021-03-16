@@ -61,20 +61,15 @@ fn take_snap(file_path: &str) {
                 String::from(file_path)
             } else {
                 // show save dialog for windows only
-                if cfg!(target_os="windows") {
-                    let file = match launch_windows_save_dialog() {
-                        Ok(file_path) => {
-                            file_path
-                        }
-                        _ => {
-                            exit(1)
-                        }
-                    };
-                    file
-                } else {
-                    println!("- Error: Native dialogs are not supported on {}", std::env::consts::OS);
-                    exit(1);
-                }
+                let file = match launch_windows_save_dialog() {
+                    Ok(file_path) => {
+                        file_path
+                    }
+                    _ => {
+                        exit(1)
+                    }
+                };
+                file
             };
             Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
             if Path::new(save_path.as_str()).exists() {
