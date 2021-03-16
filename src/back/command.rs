@@ -1,9 +1,9 @@
-extern crate wfd;
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
 use std::process::{Command, exit};
 use std::path::Path;
-use self::wfd::{DialogError, DialogParams};
+extern crate nfd;
+use nfd::Response;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -61,26 +61,18 @@ fn take_snap(file_path: &str) {
             let save_path: String = if file_path != "" {
                 String::from(file_path)
             } else {
-                // show save dialog
-                let params = DialogParams {
-                    file_name: "file.png",
-                    file_types: vec![("png", "*.png")],
-                    title: "Choose a path to save",
-                    ..Default::default()
-                };
-                let result = wfd::save_dialog(params);
-                let path: String = match result {
-                    Ok(file) => {
-                        String::from(file.selected_file_path.to_str().unwrap())
-                    }
-                    Err(e) => {
-                        match e {
-                            DialogError::HResultFailed { hresult, error_method} => {
-                                println!("- Error: HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
-                            }
-                            DialogError::UnsupportedFilepath => { println!("- Error: Unsupported file path"); }
-                            DialogError::UserCancelled => { }
+                let result1 = nfd::dialog_save().filter("png").open().unwrap_or_else(|e| {
+                    panic!(e);
+                });
+                let path = match result1 {
+                    Response::Okay(file_path) => {
+                        if !file_path.ends_with(".png") {
+                            file_path + ".png"
+                        } else {
+                            file_path
                         }
+                    }
+                    _ => {
                         exit(1);
                     }
                 };

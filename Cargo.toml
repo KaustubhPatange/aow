@@ -23,7 +23,7 @@ tokio = { version = "0.2", features = ["full"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = "0.4.19"
-wfd = "0.1.2"
+nfd = { git = "https://github.com/saurvs/nfd-rs.git" }
 
 # Only change version when you are about to release because the next CI
 # build will automatically create a draft release & publish to chocolatey.
