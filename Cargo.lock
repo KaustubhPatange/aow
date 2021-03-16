@@ -14,13 +14,13 @@ name = "aow"
 version = "0.1.4"
 dependencies = [
  "chrono",
- "nfd",
  "regex",
  "reqwest",
  "serde",
  "serde_json",
  "tokio",
  "wait-timeout",
+ "wfd",
 ]
 
 [[package]]
@@ -200,12 +200,6 @@ dependencies = [
  "pin-project 1.0.1",
  "pin-utils",
 ]
-
-[[package]]
-name = "gcc"
-version = "0.3.55"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f5f3913fa0bfe7ee1fd8248b6b9f42a5af4b9d65ec2dd2c3c26132b950ecfc2"
 
 [[package]]
 name = "getrandom"
@@ -524,14 +518,6 @@ dependencies = [
  "cfg-if 0.1.10",
  "libc",
  "winapi 0.3.9",
-]
-
-[[package]]
-name = "nfd"
-version = "0.0.4"
-source = "git+https://github.com/saurvs/nfd-rs.git#07578c5fea4d7b1f35fbf128f04b6264c3bf3c5a"
-dependencies = [
- "gcc",
 ]
 
 [[package]]
@@ -1229,6 +1215,16 @@ checksum = "4bf6ef87ad7ae8008e15a355ce696bed26012b7caa21605188cfd8214ab51e2d"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "wfd"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e713040b67aae5bf1a0ae3e1ebba8cc29ab2b90da9aa1bff6e09031a8a41d7a8"
+dependencies = [
+ "libc",
+ "winapi 0.3.9",
 ]
 
 [[package]]

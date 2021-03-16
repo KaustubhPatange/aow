@@ -2,8 +2,11 @@ use crate::back::device::Device;
 use crate::back::connect::disconnect;
 use std::process::{Command, exit};
 use std::path::Path;
-extern crate nfd;
-use nfd::Response;
+
+#[cfg(target_os = "windows")]
+extern crate wfd;
+#[cfg(target_os = "windows")]
+use self::wfd::{DialogError, DialogParams};
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -61,22 +64,35 @@ fn take_snap(file_path: &str) {
             let save_path: String = if file_path != "" {
                 String::from(file_path)
             } else {
-                let result1 = nfd::dialog_save().filter("png").open().unwrap_or_else(|e| {
-                    panic!(e);
-                });
-                let path = match result1 {
-                    Response::Okay(file_path) => {
-                        if !file_path.ends_with(".png") {
-                            file_path + ".png"
-                        } else {
-                            file_path
+                // show save dialog for windows only
+                if cfg!(target_os="windows") {
+                    let params = DialogParams {
+                        file_name: "file.png",
+                        file_types: vec![("png", "*.png")],
+                        title: "Choose a path to save",
+                        ..Default::default()
+                    };
+                    let result = wfd::save_dialog(params);
+                    let path: String = match result {
+                        Ok(file) => {
+                            String::from(file.selected_file_path.to_str().unwrap())
                         }
-                    }
-                    _ => {
-                        exit(1);
-                    }
-                };
-                path
+                        Err(e) => {
+                            match e {
+                                DialogError::HResultFailed { hresult, error_method} => {
+                                    println!("- Error: HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
+                                }
+                                DialogError::UnsupportedFilepath => { println!("- Error: Unsupported file path"); }
+                                DialogError::UserCancelled => { }
+                            }
+                            exit(1);
+                        }
+                    };
+                    path
+                } else {
+                    println!("- Error: Native dialogs are not supported on {}", std::env::consts::OS);
+                    exit(1);
+                }
             };
             Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
             if Path::new(save_path.as_str()).exists() {
@@ -112,7 +128,7 @@ fn print_all_commands() {
     println!("      -v, --version        Prints the current version of tool");
     println!("      -h, --help           Prints this help message.");
     println!("      snap [file-path]     Take a screenshot. Optionally, you can specify a path to save it otherwise");
-    println!("                           the program will open native save dialog to save the file.");
+    println!("                           the program will open native save dialog (windows only) to save the file.");
     println!("      dlk, deeplink [url]  Fires a deeplink with the \"url\".");
     println!();
     println!("Examples:");
