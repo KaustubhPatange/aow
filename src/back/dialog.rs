@@ -3,7 +3,7 @@ extern crate wfd;
 #[cfg(target_os = "windows")]
 use self::wfd::{DialogError, DialogParams};
 
-#[cfg(any(target_os = "linux", target_os = "mac"))]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub fn launch_windows_save_dialog() -> Result<String, ()> {
     println!("- Error: Native dialogs are not supported on {}", std::env::consts::OS);
     Err(())
