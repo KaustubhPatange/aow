@@ -1,5 +1,8 @@
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
+use std::process::{Command, exit};
+use std::path::Path;
+use crate::back::dialog::launch_windows_save_dialog;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -10,6 +13,18 @@ pub fn parse_command(c: &Vec<String>) {
         let _ = show_connected_device();
     } else if c[1].eq("-v") || c[1].eq("--version") {
         println!("{}", VERSION)
+    } else if c[1].eq("snap") { // snap
+        if c.len() == 3 {
+            take_snap(c[2].as_str());
+        } else {
+            take_snap("");
+        }
+    } else if c[1].eq("dlk") || c[1].eq("deeplink") { // deeplink
+        if c.len() == 3 {
+            deeplink(c[2].as_str())
+        } else {
+            println!("- Error: No url attached to the command")
+        }
     } else if c[1].eq("-d") || c[1].eq("--disconnect") {
         let result = show_connected_device();
         match result {
@@ -37,6 +52,46 @@ fn show_connected_device() -> Result<Vec<Device>, bool> {
     }
 }
 
+fn take_snap(file_path: &str) {
+    let result = Device::get_or_choose_connected_device();
+    match result {
+        Some(device) => {
+            Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("shell").arg("screencap").arg("-p").arg("/data/local/tmp/file.png").spawn().unwrap().wait().ok();
+            let save_path: String = if file_path != "" {
+                String::from(file_path)
+            } else {
+                // show save dialog for windows only
+                let file = match launch_windows_save_dialog() {
+                    Ok(file_path) => {
+                        file_path
+                    }
+                    _ => {
+                        exit(1)
+                    }
+                };
+                file
+            };
+            Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
+            if Path::new(save_path.as_str()).exists() {
+                println!("Saved to: {}", save_path);
+            } else {
+                println!("Unknown error while saving file");
+            }
+        }
+        None => {}
+    }
+}
+
+fn deeplink(link: &str) {
+    match Device::get_or_choose_connected_device() {
+        None => {}
+        Some(device) => {
+            println!("Launching => {}", link);
+            Command::new("adb").args(&["-s", device.device_id.as_str(), "shell", "am", "start", "-d", link]).spawn().unwrap().wait().ok();
+        }
+    }
+}
+
 fn print_all_commands() {
     println!("ADB Over Wifi (aow) v{} - A command line tool to connect devices over wifi (requires ADB).", VERSION);
     println!("Copyright 2020 Kaustubh Patange - https://github.com/KaustubhPatange/aow");
@@ -44,11 +99,14 @@ fn print_all_commands() {
     println!("Usage: aow [options]");
     println!();
     println!("Options:");
-    println!("      [null]              Connects a device over wifi (see demo on Github)");
-    println!("      -s, --show          Shows the list of connected device over wifi (if any).");
-    println!("      -d, --disconnect    Disconnect the connected device (if any).");
-    println!("      -v, --version       Prints the current version of tool");
-    println!("      -h, --help          Prints this help message.");
+    println!("      [null]               Connects a device over wifi (see demo on Github)");
+    println!("      -s, --show           Shows the list of connected device over wifi (if any).");
+    println!("      -d, --disconnect     Disconnect the connected device (if any).");
+    println!("      -v, --version        Prints the current version of tool");
+    println!("      -h, --help           Prints this help message.");
+    println!("      snap [file-path]     Take a screenshot. Optionally, you can specify a path to save it otherwise");
+    println!("                           the program will open native save dialog (windows only) to save the file.");
+    println!("      dlk, deeplink [url]  Fires a deeplink with the \"url\".");
     println!();
     println!("Examples:");
     println!("      aow");

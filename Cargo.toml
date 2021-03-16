@@ -24,5 +24,8 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = "0.4.19"
 
+[target.'cfg(windows)'.dependencies]
+wfd = "0.1.7"
+
 # Only change version when you are about to release because the next CI
 # build will automatically create a draft release & publish to chocolatey.
