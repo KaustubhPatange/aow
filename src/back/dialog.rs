@@ -4,9 +4,17 @@ extern crate wfd;
 use self::wfd::{DialogError, DialogParams};
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
+use rfd::FileDialog;
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub fn launch_windows_save_dialog() -> Result<String, ()> {
-    println!("- Error: Native dialogs are not supported on {}", std::env::consts::OS);
-    Err(())
+    let file = FileDialog::new().add_filter("png", &["png"]).save_file();
+    match file {
+        Some(buff) => {
+            Ok(buff.as_path().to_str().unwrap().to_owned())
+        }
+        None => { Err(()) }
+    }
 }
 
 #[cfg(target_os = "windows")]

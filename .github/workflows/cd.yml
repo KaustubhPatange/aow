@@ -1,7 +1,6 @@
 name: CI
 
-#TODO: Change this later
-on: [release]
+on: [push]
 
 jobs:
   release:
