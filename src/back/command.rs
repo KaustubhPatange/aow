@@ -1,10 +1,11 @@
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
-use std::process::{Command, exit};
+use std::process::{Command};
 use std::path::Path;
 use crate::back::dialog::launch_windows_save_dialog;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+pub const NULL: &'static str = "null";
 
 pub fn parse_command(c: &Vec<String>) {
     if c.contains(&"-h".to_owned()) || c.contains(&"--help".to_owned()) {
@@ -66,16 +67,18 @@ fn take_snap(file_path: &str) {
                         file_path
                     }
                     _ => {
-                        exit(1)
+                        NULL.to_owned()
                     }
                 };
                 file
             };
-            Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
-            if Path::new(save_path.as_str()).exists() {
-                println!("Saved to: {}", save_path);
-            } else {
-                println!("Unknown error while saving file");
+            if save_path != NULL {
+                Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
+                if Path::new(save_path.as_str()).exists() {
+                    println!("Saved to: {}", save_path);
+                } else {
+                    println!("Unknown error while saving file");
+                }
             }
         }
         None => {}

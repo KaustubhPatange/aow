@@ -1,10 +1,9 @@
 Make sure to update the version number in toml which will be used by CIs for automatic deployment.
 
-- Three github actions are currently configured.
-- CI will continuosly build on every push & pull_request
-- CD will run when commit message contains "[Released]"
-    - This CI will create a new github actions by build all the required binaries for all platforms.
-- CHOCO will run when commit message contains "--choco"
+- Two github actions are currently configured.
+- CD
+    - This CI will create a new github release by building all the required binaries for all platforms.
+- CHOCO
     - This CI will push a new release package to chocolatey.
 
 A discord message will be send to the author's private server for every CI successful build with some

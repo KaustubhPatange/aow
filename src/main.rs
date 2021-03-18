@@ -22,16 +22,15 @@ async fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() > 1 {
         parse_command(&args);
-        return
-    }
-    let result = run();
-    match result {
-        Ok(_) => {}
-        Err(_) => {
-            //error will be printed
+    } else {
+        let result = run();
+        match result {
+            Ok(_) => {}
+            Err(_) => {
+                //error will be printed
+            }
         }
     }
-
     fetch_new_version().await;
 }
 
