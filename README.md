@@ -7,7 +7,7 @@
 
 A command line tool written in **Rust** for adb to connect device to your machine over wifi.
 
-On top of that it can do a lot of things (check full menu [here](https://github.com/KaustubhPatange/aow/wiki/Command-line-options)) for eg Taking a snapshot & testing deeplinks.
+On top of that it can do a lot of things (check full menu [here](https://github.com/KaustubhPatange/aow/wiki/Command-line-options)) for eg taking a screenshot, recording screen, testing deeplinks etc.
 
 The program is made to handle multiple connected devices & also provide some _Hints_ if any error occurs with `adb`. It can smartly notify you about the new version available.
 

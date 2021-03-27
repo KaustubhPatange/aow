@@ -72,6 +72,9 @@ jobs:
     needs: [deploy]
     runs-on: ubuntu-latest
     steps:
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(echo ${{ github.sha }} | cut -c -7)"    
       - name: Sending complete notifications
         env:
           DISCORD_WEBHOOK: ${{ secrets.WEBHOOK }}

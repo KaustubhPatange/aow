@@ -1,6 +1,9 @@
 name: Chocolatey
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   choco:
