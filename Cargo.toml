@@ -1,7 +1,7 @@
 [package]
 name = "aow"
 description = "A command line tool for adb to connect devices over wifi"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Kaustubh Patange <developerkp16@gmail.com>"]
 edition = "2018"
 readme = "README.md"
@@ -23,9 +23,11 @@ tokio = { version = "0.2", features = ["full"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = "0.4.19"
+directories = "3.0.1"
 
 [target.'cfg(windows)'.dependencies]
 wfd = "0.1.7"
 
-# Only change version when you are about to release because the next CI
-# build will automatically create a draft release & publish to chocolatey.
+# Change the version when you want to release & then
+# merge the dev branch to master.
+# The CI will automatically release them to chocolatey & cargo

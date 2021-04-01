@@ -1,10 +1,14 @@
 use crate::back::device::Device;
 use crate::back::connect::disconnect;
-use std::process::{Command, exit};
+use std::process::{Command};
 use std::path::Path;
 use crate::back::dialog::launch_windows_save_dialog;
+use directories::UserDirs;
+use std::time::Duration;
+use std::io::{Write};
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+pub const NULL: &'static str = "null";
 
 pub fn parse_command(c: &Vec<String>) {
     if c.contains(&"-h".to_owned()) || c.contains(&"--help".to_owned()) {
@@ -32,6 +36,12 @@ pub fn parse_command(c: &Vec<String>) {
                 disconnect();
             }
             Err(_) => {}
+        }
+    } else if c[1].eq("rec") {
+        if c.len() == 3 {
+            screen_record(c[2].as_str())
+        } else {
+            screen_record(NULL);
         }
     }
 }
@@ -66,19 +76,66 @@ fn take_snap(file_path: &str) {
                         file_path
                     }
                     _ => {
-                        exit(1)
+                        NULL.to_owned()
                     }
                 };
                 file
             };
-            Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
-            if Path::new(save_path.as_str()).exists() {
-                println!("Saved to: {}", save_path);
-            } else {
-                println!("Unknown error while saving file");
+            if save_path != NULL {
+                Command::new("adb").arg("-s").arg(device.device_id.as_str()).arg("pull").arg("/data/local/tmp/file.png").arg(save_path.as_str()).spawn().unwrap().wait().ok();
+                if Path::new(save_path.as_str()).exists() {
+                    println!("Saved to: {}", save_path);
+                } else {
+                    println!("Unknown error while saving file");
+                }
             }
         }
         None => {}
+    }
+}
+
+fn screen_record(file_path: &str) {
+    if let Some(users_dir) = UserDirs::new() {
+        println!("Recording started: q + <enter> to stop");
+        let mut child = Command::new("adb")
+            .args(&["shell", "screenrecord", "/data/local/tmp/video.mp4"]).spawn().unwrap();
+        loop {
+            let mut buff = String::new();
+            std::io::stdin().read_line(&mut buff).ok();
+            if buff.trim() == "q" {
+                break;
+            }
+        }
+        child.kill().ok();
+        std::thread::sleep(Duration::from_millis(500));
+
+        let mut final_dst: String;
+
+        if file_path == NULL {
+            final_dst = users_dir.video_dir().unwrap().to_str().unwrap().to_string();
+            final_dst.push_str("\\");
+
+            print!("Enter destination: {}", final_dst);
+            std::io::stdout().flush().ok();
+            let mut file_name = String::new();
+            std::io::stdin().read_line(&mut file_name).ok();
+            file_name = file_name.trim().to_owned();
+            if file_name.is_empty() {
+                file_name = "video".to_owned();
+            }
+            if !file_name.ends_with(".mp4") {
+                file_name.push_str(".mp4");
+            }
+
+            final_dst.push_str(file_name.as_str());
+        } else {
+            final_dst = file_path.to_owned();
+        }
+
+        Command::new("adb").args(&["pull", "/data/local/tmp/video.mp4", final_dst.as_str()]).spawn().unwrap().wait().ok();
+        Command::new("adb").args(&["shell", "rm", "/data/local/tmp/video.mp4"]).spawn().unwrap().wait().ok();
+    } else {
+        println!("- Error: Could not detect user's dir")
     }
 }
 
@@ -106,6 +163,7 @@ fn print_all_commands() {
     println!("      -h, --help           Prints this help message.");
     println!("      snap [file-path]     Take a screenshot. Optionally, you can specify a path to save it otherwise");
     println!("                           the program will open native save dialog (windows only) to save the file.");
+    println!("      rec, [file-path]     Start recording device screen. Optionally, you can specify a path to save.");
     println!("      dlk, deeplink [url]  Fires a deeplink with the \"url\".");
     println!();
     println!("Examples:");

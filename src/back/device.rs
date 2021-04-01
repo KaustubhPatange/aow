@@ -1,7 +1,6 @@
 use std::process::Command;
 use regex::Regex;
 use std::io::stdin;
-use std::process::exit;
 
 #[derive(Clone, Copy)]
 pub enum Status {
@@ -70,7 +69,7 @@ impl Device {
         };
         if input == 0 {
             println!("- Error: Index cannot be 0 or unknown!");
-            exit(1)
+            return None
         }
         return Some(&v[input-1]);
     }
@@ -83,7 +82,14 @@ impl Device {
         }
 
         let device: &Device  = if device_list.len() > 1 {
-            Device::choose_a_device(&device_list).unwrap()
+            match Device::choose_a_device(&device_list) {
+                None => {
+                    return None
+                }
+                Some(device) => {
+                    device
+                }
+            }
         } else {
             device_list.first().unwrap()
         };

@@ -1,6 +1,9 @@
 name: Chocolatey
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   choco:
@@ -51,6 +54,12 @@ jobs:
           move *.nupkg aow.nupkg
           dir
           choco push aow.nupkg --source https://push.chocolatey.org/
+
+      - name: Release on Cargo
+        run: |
+          cargo publish --allow-dirty
+
+
 
   notification:
     needs: [choco]
