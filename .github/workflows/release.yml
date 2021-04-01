@@ -57,6 +57,7 @@ jobs:
 
       - name: Release on Cargo
         run: |
+          cargo login ${{ secrets.CRATES }}
           cargo publish --allow-dirty
 
 

@@ -30,4 +30,4 @@ wfd = "0.1.7"
 
 # Change the version when you want to release & then
 # merge the dev branch to master.
-# The CI will automatically release them to chocolatey & cargo
+# The CI will automatically release them to chocolatey & cargo.
